@@ -186,6 +186,12 @@ Note that you need to install Mellanox `OFED` and `MFT` before being able to run
 
 Add Sample figure
 
+## Dynamic Burst Size Reduction
+
+We have investigated the impact of dynamically reducing the number of RX descriptors in case of congestion in the TX path. Our implementation can be found at [DMAdynamic][dynamic-dma-branch] branch of fastclick.
+
+If you want to try it, you have to compile fastclick with `--enable_dynamic_rxburst` flag.
+
 ## Citing our paper
 
 If you use ddio-bench in any context, please cite our [paper][ddio-atc-paper]:
@@ -221,3 +227,4 @@ If you have any questions regarding our code or the paper, you can contact Alire
 [pqos-wiki]: https://github.com/intel/intel-cmt-cat/wiki
 [pcie-events]: https://software.intel.com/en-us/forums/software-tuning-performance-optimization-platform-monitoring/topic/543883
 [mlx5-counters]: https://community.mellanox.com/s/article/understanding-mlx5-ethtool-counters
+[dynamic-dma-branch]: https://github.com/tbarbette/fastclick/tree/DMAdynamic
