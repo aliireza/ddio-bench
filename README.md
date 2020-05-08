@@ -55,6 +55,13 @@ You should define 4 variables for every NIC port:
 
 The first three variables can be set via `ifconfig`. To find the PCIe address of an interface, you can run `sudo lspci -v | grep Mellanox`. It is important to set these values carefuly, as NPF replaces these values in its scripts.
 
+NPF use ssh to connect to the servers. Please make sure that you have setup passwordless ssh on your system. If you want to use your current key (e.g., `ida_rsa`) on a different server, you can run the following commands:
+
+```bash
+eval $(ssh-agent -s)
+ssh-add ~/.ssh/ida_rsa
+```
+
 You can check [NPF README][npf-readme] file for more information.
 
 ### Data Plane Development Kit (DPDK)
@@ -147,7 +154,7 @@ sudo ethtool -A enp23s0f0 rx off tx off
 
 It is possible to measure the number of PAUSE frames via `ethtool` and `dpdk`.
 
-*ethtool: `sudo ethtool -S enp23s0f0 | grep pause_ctrl`. For more info check [here][mlx5-counters].
+*ethtool: `sudo ethtool -S enp23s0f0 | grep pause_ctrl`. For more info, check [here][mlx5-counters].
 
 *dpdk: You can read ethtool statistics in DPDK via `xstats` API. However, some of the Mellanox counters (e.g., `rx_pause_ctrl` and `tx_pause_ctrl`) are not available by default. To measure PAUSE frames via dpdk, you should add the counters to `static const struct mlx5_counter_ctrl mlx5_counters_init[]` located in `dpdk/drivers/net/mlx5/mlx5_stats.c`, as follows:
 
