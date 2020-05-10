@@ -1,6 +1,6 @@
 %info
 L2 forwarding application along with a cache-sensitive application
-
+Copyright (c) 2020, Alireza Farshin, KTH Royal Institute of Technology - All Rights Reserved
 
 %config
 n_runs=10
