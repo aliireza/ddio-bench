@@ -1,0 +1,16 @@
+#Path to NPF
+NPF_PATH=/home/alireza/ddio-bench/npf/
+
+# Tools path 
+TOOLS_PATH :=
+
+#Path to fastclick on 
+
+TOOLS_PATH += DUT_FASTCLICK_PATH=/home/alireza/ddio-bench/fastclick
+TOOLS_PATH += PKT_GEN_FASTCLICK_PATH=/home/alireza/ddio-bench/fastclick
+
+# Path to Splash-3 Benchmark Suite
+TOOLS_PATH += DUT_SPLASH_PATH=/home/alireza/ddio-bench/Splash-3/codes/apps/water-nsquared
+
+# NPF Clusters (dut.node and pkt-gen.node should be defined in ${NPF_PATH}/cluster)
+NPF_CLUSTER=server=dut client=pkt-gen

@@ -1,0 +1,411 @@
+%info
+L2 forwarding application along with a cache-sensitive application
+
+
+%config
+n_runs=10
+timeout=-1
+
+accept_zero={result:}
+
+
+//============================================================================================//
+// Variable Config
+//============================================================================================//
+
+
+var_names={THROUGHPUT:Throughput (Gbps)}
+var_format={THROUGHPUT:%.02f}
+var_unit={THROUGHPUT: }
+var_divider={THROUGHPUT:1000000000}
+
+var_names+={TXRATE:Generator Rate (Gbps)}
+var_format+={TXRATE:%.02f}
+var_unit+={TXRATE: }
+var_divider+={TXRATE:1000000000}
+
+var_names+={PPS:Received Packets per Second (Million)}
+var_format+={PPS:%.02f}
+var_unit+={PPS: }
+var_divider+={PPS:1000000}
+
+var_names+={TESTTIME:Test Time (s)}
+var_format+={TESTTIME:%.02f}
+var_unit+={TESTTIME: }
+var_divider+={TESTTIME:1}
+
+var_names+={LATAVG:Average latency (us), LAT50:50th% percentile latency (us), LAT99:99th% percentile latency (us)}
+var_unit+={LATAVG: ,LAT50: ,LAT99: }
+var_divider+={LATAVG:1, LAT50:1, LAT90:1}
+
+
+var_names+={LLCMISSES-sum-C0:Sum of Cache Misses of cache-hungry application}
+var_names+={LLCMISSES-sum-C2:Sum of Cache Misses of I/O application}
+var_unit+={LLCMISSES-sum-C0: ,LLCMISSES-sum-C2: }
+var_divider+={LLCMISSES-sum-C0:1, LLCMISSES-sum-C2:1}
+
+
+//============================================================================================//
+// Variables Definition
+//============================================================================================//
+
+
+%variables
+
+// PATH
+
+// These will be overwritten by the Makefile. Otherwise, you should uncomment/change them.
+
+//DUT_FASTCLICK_PATH=/home/alireza/ddio-bench/fastclick
+//PKT_GEN_FASTCLICK_PATH=/home/alireza/ddio-bench/fastclick
+//DUT_SPLASH_PATH=/home/alireza/ddio-bench/Splash-3/codes/apps/water-nsquared
+
+
+// L2 Forwarding variables
+NINBURST=32
+NOUTBURST=32
+NDESC=4096
+NCORE=1
+PKTSIZE=1024
+TIMING=0 //for replay: 0 is maximum rate
+threadoffset=2 // run L2 on core 2
+
+// Packet generator variables
+GEN_BURST=128
+GEN_FLOWS=4096
+GEN_PKT_SIZE=1024
+GEN_BLOCKING=true
+GEN_REPLAY=50
+GEN_INIT_WAIT=5
+GEN_TOT=524288
+GEN_THREADS=4 //Change not supported as of now
+-rate:LIMIT=1000000
+rate:RATE=1000
+RCV_NIC=0
+SND_NIC=0
+REPLAY_TIMING=0
+
+// CAT variables
+NWAY={0x600,0x300,0x180,0x0c0,0x060,0x030,0x018,0x00c,0x006,0x003} //Sweep 2W
+
+// Splash-3 variables
+conf={ddio_sim,parsec_native}
+
+// Profiling variables
+MAX_CORE=2
+
+%late_variables
+
+// Packet generator variables
+rate:LIMIT=EXPAND( $(( $RATE * 10 if $RATE < 100000 else 1000000 )) )
+NBBUF=EXPAND( $(( (($LIMIT + ($GEN_BURST * 2) ) * $GEN_THREADS ) + 8192 )) )
+advertise?=1
+
+
+NG=[0-3]
+LAUNCH_CODE=EXPAND( write gen0/rcv$NG/avg.reset, write gen0/gen$NG/sndavg.reset, write gen0/gen$NG/replay.stop $replay_count, write gen0/gen$NG/replay.active true, )
+LAUNCH_CODE=HEAD($GEN_THREADS, $LAUNCH_CODE)
+
+ALL_AVG=EXPAND( $(gen0/rcv$NG/tsd.average) )
+ALL_AVG=HEAD($GEN_THREADS, $ALL_AVG)
+
+ALL_50=EXPAND( $(gen0/rcv$NG/tsd.median) )
+ALL_50=HEAD($GEN_THREADS, $ALL_50)
+
+ALL_99=EXPAND( $(gen0/rcv$NG/tsd.perc99) )
+ALL_99=HEAD($GEN_THREADS, $ALL_99)
+
+ALL_SND=EXPAND( $(gen0/gen$NG/sndavg.link_rate) )
+ALL_SND=HEAD($GEN_THREADS, $ALL_SND)
+
+ALL_RATE=EXPAND( $(gen0/rcv$NG/avg.rate) )
+ALL_RATE=HEAD($GEN_THREADS, $ALL_RATE)
+
+ALL_LINK=EXPAND( $(gen0/rcv$NG/avg.link_rate) )
+ALL_LINK=HEAD($GEN_THREADS, $ALL_LINK)
+
+
+//============================================================================================//
+// Server: DUT
+//============================================================================================//
+
+
+%script@server sudo=true
+cp RXM $DUT_FASTCLICK_PATH
+
+// Enabling MSR
+modprobe msr 
+
+// Setup CAT configuration
+echo "Configuring CAT"
+pqos -e "llc@0:0=0x0C0;mba@0:0=40;mba@0:1=40;llc@0:1=$NWAY"
+pqos -a "llc:0=2;llc:1=0,1,3-17"
+
+// Run cache-hungry application on core 0
+cp ddio_sim $DUT_SPLASH_PATH/inputs/
+cd $DUT_SPLASH_PATH
+echo "Launching cache-hungry application"
+taskset -c 0 ./WATER-NSQUARED < inputs/$conf > /dev/null &
+
+// Run I/O application on core 2
+cd $DUT_FASTCLICK_PATH
+echo "Launching I/O application"
+bin/click --dpdk -l 0-35 -n 6 -w ${self:$RCV_NIC:pci} -v -- RXM
+
+
+%script@server sudo=true name=profiler autokill=false waitfor=PKTGEN_STARTED delay=0
+cp pqos.sh $DUT_FASTCLICK_PATH
+cp pqos-processing.sh $DUT_FASTCLICK_PATH
+
+// Run PQOS monitoring on core 1
+cd $DUT_FASTCLICK_PATH
+bash pqos.sh
+
+%script@server sudo=true name=pqos-parser autokill=true waitfor=PKTGEN_FINISHED delay=0
+
+// Processing pqos output
+cd $DUT_FASTCLICK_PATH
+echo "Launching PQOS script"
+bash pqos-processing.sh test.log
+rm -f test.log
+
+//============================================================================================//
+
+// Light configuration file for water-nsquared //
+
+%file@server ddio_sim
+  1.5e-16  1000 3000   6
+ -1      3000     3  0
+1 6.212752
+
+
+%file@server pqos.sh
+
+#============================================================================================#
+# pqos.sh : Script to launch pqos
+#============================================================================================#
+
+echo "Launching PQOS"
+pqos -m "all:0-$(($MAX_CORE))" -o test.log 
+
+
+#============================================================================================#
+
+
+%file@server pqos-processing.sh
+
+#============================================================================================#
+# pqos-processing.sh : Script to process pqos output to get LLC misses and other events
+#============================================================================================#
+
+input_file=$1
+monitoring_cores=$(seq 0 $MAX_CORE)
+column=$(seq 2 6)
+column=$(seq 3 3)
+column_name=("NA" "RESULT-CORE" "RESULT-IPC" "RESULT-LLCMISSES" "RESULT-LLCOCCUPANCY" "RESULT-MBL" "RESULT-MBR")
+column_scale=(" " " " " " "k" "KB" "MB/s" "MB/s")
+
+
+for c in $monitoring_cores; do
+	for col in $column;do
+
+	#Sum
+	result=`cat $input_file\
+	| awk -v core=$c '{if($1!="TIME" && $1==core) print $0}'\
+	| awk -v column=$col '{print $column}'\
+	| awk '{ total +=$1;count++;} END{print total}'`
+	echo ${column_name[$col]}"-sum-C"$c" "$result" "${column_scale[$col]}
+
+	# #Average
+	# result=`cat $input_file\
+	# | awk -v core=$c '{if($1!="TIME" && $1==core) print $0}'\
+	# | awk -v column=$col '{print $column}'\
+	# | awk '{ total +=$1;count++;} END{print total/count}'`
+	# echo ${column_name[$col]}"-avg-C"$c" "$result" "${column_scale[$col]}
+
+	# #Median
+	# result=`cat $input_file\
+	# | awk -v core=$c '{if($1!="TIME" && $1==core) print $0}'\
+	# | awk -v column=$col '{print $column}'\
+	# | awk 'BEGIN{max=0}{if ($1>max) max=$1; fi} END{print max/1k}'\
+	# | sort -n \
+	# | awk '{ a[i++]=$1; }END { x=int((i+1)/2); if (x < (i+1)/2) print (a[x-1]+a[x])/2; else print a[x-1];}'`
+	# echo ${column_name[$col]}"-median-C"$c" "$result" "${column_scale[$col]}
+
+	# #Maximum
+	# result=`cat $input_file\
+	# | awk -v core=$c '{if($1!="TIME" && $1==core) print $0}'\
+	# | awk -v column=$col '{print $column}'\
+	# | awk 'BEGIN{max=0}{if ($1>max) max=$1; fi} END{print max/1k}'`
+	# echo ${column_name[$col]}"-max-C"$c" "$result" "${column_scale[$col]}
+	
+	done
+done
+
+#============================================================================================#
+
+
+%script@client sudo=true autokill=false
+
+//============================================================================================//
+// Client: pkt-gen
+//============================================================================================//
+
+
+cp TXM $PKT_GEN_FASTCLICK_PATH
+cd $PKT_GEN_FASTCLICK_PATH
+echo "EVENT PKTGEN_STARTED"
+bin/click --dpdk -l 0-15 -n 6 -w ${self:$SND_NIC:pci} -v -- GEN_LENGTH=$GEN_PKT_SIZE TXM
+echo "EVENT PKTGEN_FINISHED"
+
+//============================================================================================//
+
+
+%file@server RXM
+
+//============================================================================================//
+// Receiver (RX) Module: L2 Forwarding
+//============================================================================================//
+
+define(
+	$ndesc $(( $NDESC *1)),
+	$queueLen 1024,
+	$queueNum $NCORE,
+	$maxThreads $NCORE,
+)
+
+fd0 :: FromDPDKDevice(0, N_QUEUES $queueNum, MAXTHREADS $maxThreads, PAUSE none, BURST $NINBURST, NDESC $ndesc, THREADOFFSET $threadoffset, NUMA false);
+td0 :: ToDPDKDevice(0, IQUEUE $queueLen, BLOCKING true, BURST $NOUTBURST);
+
+fd0
+    -> EtherMirror
+    -> td0
+
+DriverManager(
+	print "EVENT DUT_STARTED",
+        wait,
+        print "",
+        print "Rxcount "$(fd0.count),
+        print "Rxdrops "$(fd0.hw_dropped),
+        print "",
+
+        // Print additional stats from the NIC
+        //print "RESULT-RX-OUT-OF-BUFFER $(fd0.xstats rx_out_of_buffer)",
+        //print "RESULT-RX-PAUSE "$(fd0.xstats rx_pause_ctrl_phy),
+        //print "RESULT-TX-PAUSE "$(fd0.xstats tx_pause_ctrl_phy),
+        stop
+);
+
+//============================================================================================//
+
+
+%file@client TXM
+
+//============================================================================================//
+// Transmitter (TX) Module: Packet Generator
+//============================================================================================//
+// Inspited by NPF sample testie file written by Tom Barbette
+// https://github.com/tbarbette/npf/blob/master/modules/fastclick-udpgen-latency-single.testie
+
+d :: DPDKInfo($NBBUF)
+
+define($replay_count $GEN_REPLAY)
+
+elementclass Numberise { $magic |
+    input-> Strip(14) -> check :: CheckIPHeader -> StoreData(36,$magic) ->  nPacket :: NumberPacket(40) -> SetIPChecksum -> Unstrip(14) -> output
+}
+
+elementclass Generator { $NUM, $srcmac, $dstmac, $srcip, $dstip, $th |
+    fastudp :: FastUDPFlows(RATE 0, LIMIT $GEN_TOT, LENGTH $GEN_LENGTH, SRCETH $srcmac, DSTETH $dstmac, SRCIP $srcip, DSTIP $dstip, FLOWS $GEN_FLOWS, FLOWSIZE $GEN_BURST)
+    -> MarkMACHeader
+    -> EnsureDPDKBuffer
+    -> Numberise(\<123400>$NUM)
+    -> replay :: ReplayUnqueue(STOP 0, TIMING $REPLAY_TIMING, QUICK_CLONE true)
+    -> rt :: RecordTimestamp(N $LIMIT, OFFSET 54)
+    -> sndavg :: AverageCounter() //Single thread here
+    -> output;
+
+    Idle -> puller::Null -> Discard;
+    StaticThreadSched(replay $th,puller $th);
+}
+
+elementclass Receiver { $rt |
+    input
+    -> tsd :: TimestampDiff($rt, N $(( $GEN_TOT * $GEN_REPLAY)) ) //MT path !!
+    -> Unstrip(14)
+    -> avg :: AverageCounterMP
+    -> Discard;
+
+    unt :: Print("WARNING: Untimestamped packet", -1)
+    -> Discard;
+    tsd[1] -> unt;
+}
+
+elementclass MultiThreadGenerator { $port, $outPort, $srcmac, $dstmac, $outSrcmac, $srcip, $dstip |
+    tdOUT::ToDPDKDevice($port, BLOCKING $GEN_BLOCKING);
+
+    gen0 :: Generator(\<01>, $srcmac, $dstmac, $srcip, $dstip, 0) -> tdOUT;
+    gen1 :: Generator(\<02>, $srcmac, $dstmac, $srcip, $dstip, 1) -> tdOUT;
+    gen2 :: Generator(\<03>, $srcmac, $dstmac, $srcip, $dstip, 2) -> tdOUT;
+    gen3 :: Generator(\<04>, $srcmac, $dstmac, $srcip, $dstip, 3) -> tdOUT;
+
+    fd :: FromDPDKDevice($outPort, MAC $outSrcmac, PROMISC false, VERBOSE 99, PAUSE none)
+    -> c0 :: Classifier(12/0806 20/0001,
+                        12/0806 20/0002,
+                        12/0800,
+                        -)[2]
+    -> Strip(14)
+    -> magic :: Classifier( 36/12340001,
+                            36/12340002,
+                            36/12340003,
+                            36/12340004,
+                            -)
+
+    magic[0] -> rcv0 :: Receiver(gen0/rt);
+    magic[1] -> rcv1 :: Receiver(gen1/rt);
+    magic[2] -> rcv2 :: Receiver(gen2/rt);
+    magic[3] -> rcv3 :: Receiver(gen3/rt);
+
+    magic[4]
+    -> Print("WARNING: Unknown magic / untimestamped packet", -1)
+    -> Discard;
+
+    c0[3]
+    -> Print("WARNING: Non-IP packet !")
+    -> Discard;
+
+    c0[0] -> ARPResponder($srcip $srcmac)
+          -> tdOUT;
+    c0[1] -> Discard;
+
+    input -> tdOUT;
+}
+
+gen0 :: MultiThreadGenerator(${client:$RCV_NIC:pci}, ${client:$RCV_NIC:pci}, ${client:$RCV_NIC:mac}, ${server:$RCV_NIC:mac}, ${client:$RCV_NIC:mac}, ${client:$RCV_NIC:ip}, ${server:$RCV_NIC:ip})
+
+//Advertise return MAC address
+adv :: FastUDPFlows(RATE 0, LIMIT -1, LENGTH 60, SRCETH ${client:$SND_NIC:mac}, DSTETH ${server:$SND_NIC:mac}, SRCIP ${client:$SND_NIC:ip}, DSTIP ${server:$SND_NIC:ip}, FLOWS 1, FLOWSIZE 1, ACTIVE $advertise)
+ -> RatedUnqueue(1)
+ -> gen0;
+// -> ToDPDKDevice(1);
+
+DriverManager(
+    pause,
+    pause,
+    pause,
+    pause,
+    wait ${GEN_INIT_WAIT}s,
+    read d.pool_count,
+    print "EVENT GEN_BEGIN\n\r",
+    print "Launching replay",
+    $LAUNCH_CODE
+    set starttime $(now),
+    pause,
+    read d.pool_count,
+    print "RESULT-TESTTIME $(sub $(now) $starttime)",
+    print "RESULT-LATAVG $(div $(add $ALL_AVG 0) $GEN_THREADS)",
+	print "RESULT-LAT50 $(div $(add $ALL_50 0) $GEN_THREADS)",
+	print "RESULT-LAT99 $(div $(add $ALL_99 0) $GEN_THREADS)",
+    print "RESULT-TXRATE $(add $ALL_SND )",
+    print "RESULT-PPS $(add $ALL_RATE )",
+    print "RESULT-THROUGHPUT $(add $ALL_LINK )")
