@@ -9,5 +9,5 @@ run:
 force-run:
 	${NPF_PATH}/npf-run.py local --testie ./ddio-splash.testie --cluster ${NPF_CLUSTER} --config graph_type=boxplot graph_y_group={result:all} --output --output-columns x all --max-results --graph-filename splash-results.pdf --graph-size 10 5 --variable ${TOOLS_PATH} ${NPF_FLAGS}
 
-clear:
-	rm -fr splash-results*
+clean:
+	rm -fr splash-results* testie*/
