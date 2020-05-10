@@ -110,9 +110,10 @@ To build PCM tool, you can run the following commands.
 git clone https://github.com/opcm/pcm.git
 cd pcm
 make
+sudo make install
 ```
 
-To check your installation, run `sudo ./pcm-pcie.x`.
+To check your installation, run `sudo pcm-pcie`.
 
 ### Intel Resource Director Technology (RDT) Software Package (intel-cmt-cat)
 
@@ -189,9 +190,37 @@ To change its status, you can run `sudo mlxconfig -d /dev/mst/mt4119_pciconf0 se
 
 Note that you need to install Mellanox `OFED` and `MFT` before being able to run the mentioned commands. For more info, check the Mellanox manual for your NIC.
 
-## Running Experiments
+## Experiments
 
-Add Sample figure
+This repo is mainly focuses on the experiments performed in Section 4 and 5 of [DDIO paper][ddio-atc-paper].
+
+The experiments are located at `experiments/`. Every folder has a `Makefile` and `README.md` that can be used to run the experiment.
+
+For more information, please check [README][experiments/README.md]
+
+## Tuning DDIO
+
+You can use [DDIOTune][ddiotune-element] element in fastclick to enable/disable/tune DDIO. If you want to tune DDIO in a different context you can use the following guidelines.
+
+- Tuning: Our experiments show that changing the values of `IIO LLC WAYS` register, located at `0xC8B`, could improve the performance of DDIO. The default value of this register in our testbed is `0x600`, which has 2 set bits. You can read the current value and write new values to this register via `msr-tools`, as follows:
+
+```bash
+sudo modprobe msr
+sudo rdmsr 0xc8b
+sudo wrmsr 0xc8b 0x7f0
+```
+
+- Disabling/Enabling DDIO: DDIO is enabled by default on Intel Xeon processors. DDIO can be disabled globally (i.e.,  by setting the `Disable_All_Allocating_Flows` bit in `iiomiscctrl` register) or per-root PCIe port (i.e., setting bit `NoSnoopOpWrEn` and unsetting bit `Use_Allocating_Flow_Wr` in `perfctrlsts_0` register).
+
+`alter-ddio.c` provides a simple C program to change the state of DDIO for a PCIe port. To use `alter-ddio`, run the following commands:
+
+```bash
+sudo apt-get install libpci-dev
+gcc alter-ddio.c -o alter-ddio -lpci
+sudo ./alter-ddio
+```
+
+You can also check the implementation of [DDIOTune][ddiotune-cc] element in fastclick.
 
 ## Dynamic Burst Size Reduction
 
@@ -229,6 +258,7 @@ If you have any questions regarding our code or the paper, you can contact Alire
 [testpmd-doc]: https://doc.dpdk.org/guides/testpmd_app_ug/intro.html
 [fastclick-repo]: https://github.com/tbarbette/fastclick
 [ddiotune-element]: https://github.com/tbarbette/fastclick/wiki/DDIOTune
+[ddiotune-cc]: https://github.com/tbarbette/fastclick/blob/master/elements/research/ddiotune.cc
 [pcm-page]: https://software.intel.com/content/www/us/en/develop/articles/intel-performance-counter-monitor.html
 [rdt-page]: https://www.intel.com/content/www/us/en/architecture-and-technology/resource-director-technology.html
 [pqos-wiki]: https://github.com/intel/intel-cmt-cat/wiki
