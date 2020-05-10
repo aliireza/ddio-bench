@@ -33,7 +33,7 @@ sudo apt install python3 python3-pip
 pip3 install --user -r requirements.txt
 ```
 
-You should also define your servers and NICs configuration in NPF. To do so, you can define `pkt-gen.node` and `dut.node` in the `npf/cluster` according to the example node files. For example, one of our servers is define as follows:
+You should also define your servers and NICs configuration in NPF. To do so, you can define `pkt-gen.node` and `dut.node` in the `npf/cluster` according to the example node files. For example, one of our servers is defined as follows:
 
 ```
 path=/home/alireza/ddio-bench/npf/
@@ -65,7 +65,7 @@ You should define 4 variables for every NIC port:
 
 The first three variables can be set via `ifconfig`. To find the PCIe address of an interface, you can run `sudo lspci -v | grep Mellanox`. It is important to set these values carefuly, as NPF replaces these values in its scripts.
 
-NPF use ssh to connect to the servers. Please make sure that you have setup passwordless ssh on your system. If you want to use your current key (e.g., `ida_rsa`) on a different server, you can run the following commands:
+NPF uses ssh to connect to the servers. Please make sure that you have setup passwordless ssh on your system. If you want to use your current key (e.g., `ida_rsa`) on a different server, you can run the following commands:
 
 ```bash
 eval $(ssh-agent -s)
@@ -76,7 +76,7 @@ You can check [NPF README][npf-readme] file for more information.
 
 ### Data Plane Development Kit (DPDK)
 
-We use [DPDK][dpdk-page] to bypass kernel network stack in order achieve line rate in our tests. To build DPDK, you can run the following commands. Note that Mellanox drivers (e.g., MLX5) is not enabled by default and you should enable them in `dpdk/config/common_base` file if you have Mellanox cards.
+We use [DPDK][dpdk-page] to bypass kernel network stack in order achieve line rate in our tests. To build DPDK, you can run the following commands. Note that Mellanox drivers (e.g., MLX5) is not enabled by default and you should enable them in `dpdk/config/common_base` if you have Mellanox cards.
 
 ```bash
 git clone https://github.com/DPDK/dpdk.git
@@ -212,7 +212,7 @@ sudo rdmsr 0xc8b
 sudo wrmsr 0xc8b 0x7f0
 ```
 
-- Disabling/Enabling DDIO: DDIO is enabled by default on Intel Xeon processors. DDIO can be disabled globally (i.e.,  by setting the `Disable_All_Allocating_Flows` bit in `iiomiscctrl` register) or per-root PCIe port (i.e., setting bit `NoSnoopOpWrEn` and unsetting bit `Use_Allocating_Flow_Wr` in `perfctrlsts_0` register).
+- Disabling/Enabling DDIO: DDIO is enabled by default on Intel Xeon processors. DDIO can be disabled globally (i.e.,  by setting the `Disable_All_Allocating_Flows` bit in `iiomiscctrl` register) or per-root PCIe port (i.e., setting bit `NoSnoopOpWrEn` and unsetting bit `Use_Allocating_Flow_Wr` in `perfctrlsts_0` register). You can find more information about these register in the second volume of your processor's datasheet. For instance, you can check [Haswell][haswell-datasheet] and [Cascade Lake][cascade-datasheet] datasheets.
 
 `change-ddio.c` is a simple C program to change the state of DDIO for a PCIe port. To use `change-ddio`, run the following commands:
 
@@ -267,4 +267,6 @@ If you have any questions regarding our code or the paper, you can contact Alire
 [pqos-wiki]: https://github.com/intel/intel-cmt-cat/wiki
 [pcie-events]: https://software.intel.com/en-us/forums/software-tuning-performance-optimization-platform-monitoring/topic/543883
 [mlx5-counters]: https://community.mellanox.com/s/article/understanding-mlx5-ethtool-counters
+[haswell-datasheet]: https://www.intel.com/content/dam/www/public/us/en/documents/datasheets/xeon-e5-v2-datasheet-vol-2.pdf
+[cascade-datasheet]: https://www.intel.com/content/www/us/en/products/docs/processors/xeon/2nd-gen-xeon-scalable-datasheet-vol-2.html
 [dynamic-dma-branch]: https://github.com/tbarbette/fastclick/tree/DMAdynamic
