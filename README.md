@@ -214,7 +214,7 @@ sudo wrmsr 0xc8b 0x7f0
 
 - Disabling/Enabling DDIO: DDIO is enabled by default on Intel Xeon processors. DDIO can be disabled globally (i.e.,  by setting the `Disable_All_Allocating_Flows` bit in `iiomiscctrl` register) or per-root PCIe port (i.e., setting bit `NoSnoopOpWrEn` and unsetting bit `Use_Allocating_Flow_Wr` in `perfctrlsts_0` register).
 
-`alter-ddio.c` provides a simple C program to change the state of DDIO for a PCIe port. To use `alter-ddio`, run the following commands:
+`alter-ddio.c` is a simple C program to change the state of DDIO for a PCIe port. To use `alter-ddio`, run the following commands:
 
 ```bash
 sudo apt-get install libpci-dev
