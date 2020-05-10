@@ -25,4 +25,3 @@ We used [Seastar][seastar-page] guidelines to benchmark their [Memcached][seasta
 [metron-repo]: https://github.com/tbarbette/fastclick/tree/metron
 [gen-ip-flows]: https://github.com/tbarbette/fastclick/blob/metron/elements/ip/generateipflowdispatcher.hh
 [georgios-github]: https://github.com/gkatsikas
-

@@ -17,7 +17,7 @@ This folder contains the following experiments:
 
 - `others`: Contains information for reproducing other experiments done in our paper.
 
-Before running any experiment, you should define variables in `includes/Makefile.includes` according to your testbed.
+**Before running any experiment, you should define variables in `includes/Makefile.includes` according to your testbed.**
 
 Check the `README` inside each folder for more details.
 

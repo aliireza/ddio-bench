@@ -196,7 +196,7 @@ This repo is mainly focuses on the experiments performed in Section 4 and 5 of [
 
 The experiments are located at `experiments/`. Every folder has a `Makefile` and `README.md` that can be used to run the experiment.
 
-For more information, please check [README][experiments/README.md]
+For more information, please check [README](experiments/README.md).
 
 ## Tuning DDIO
 
