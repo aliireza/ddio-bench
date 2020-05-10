@@ -1,6 +1,6 @@
 # ddio-bench: Understanding Intel Data Direct I/O Technology
 
-This repositoy contains information/source code to perform the experiments done in [DDIO paper][ddio-atc-paper] published at ATC'20.
+This repositoy contains information/source code to perform the experiments done in [DDIO paper][ddio-atc-paper] published at [ATC'20][atc20-page].
 
 ## Experiments
 
@@ -254,6 +254,7 @@ month = jul,
 If you have any questions regarding our code or the paper, you can contact Alireza Farshin (farshin at kth.se) and/or Amir Roozbeh (amirrsk at kth.se).
 
 [ddio-atc-paper]: https://people.kth.se/~farshin/documents/ddio-atc20.pdf
+[atc20-page]: https://www.usenix.org/conference/atc20
 [npf-repo]: https://github.com/tbarbette/npf
 [npf-readme]: https://github.com/tbarbette/npf#network-performance-framework
 [dpdk-page]:https://www.dpdk.org/
