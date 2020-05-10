@@ -2,6 +2,16 @@
 
 This repositoy contains information/source code to perform the experiments done in [DDIO paper][ddio-atc-paper] published at ATC'20.
 
+## Experiments
+
+This repo is mainly focuses on the experiments performed in Section 4 and 5 of [DDIO paper][ddio-atc-paper].
+
+The experiments are located at `experiments/`. Every folder has a `Makefile` and `README.md` that can be used to run the experiment.
+
+For more information, please check [README](experiments/README.md).
+
+**Note that you have to setup your testbed based on the following guidelines before running any experiment.**
+
 ## Testbed
 
 All of the experiments require two servers interconnected via a 100-Gbps link. One of the servers (i.e., `client`) generates packets, while the other one (i.e., `dut`) acts as the device under test. Our testbed configuration is shown in the following table.
@@ -189,14 +199,6 @@ sudo mlxconfig -d /dev/mst/mt4119_pciconf0 q | grep CQE
 To change its status, you can run `sudo mlxconfig -d /dev/mst/mt4119_pciconf0 set CQE_COMPRESSION=1`.
 
 Note that you need to install Mellanox `OFED` and `MFT` before being able to run the mentioned commands. For more info, check the Mellanox manual for your NIC.
-
-## Experiments
-
-This repo is mainly focuses on the experiments performed in Section 4 and 5 of [DDIO paper][ddio-atc-paper].
-
-The experiments are located at `experiments/`. Every folder has a `Makefile` and `README.md` that can be used to run the experiment.
-
-For more information, please check [README](experiments/README.md).
 
 ## Tuning DDIO
 
