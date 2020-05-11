@@ -16,7 +16,7 @@ For more information, please check [README](experiments/README.md).
 
 You can use [DDIOTune][ddiotune-element] element in fastclick to enable/disable/tune DDIO. If you want to tune DDIO in a different context you can use the following guidelines.
 
-- Tuning: Our experiments show that changing the values of `IIO LLC WAYS` register, located at `0xC8B`, could improve the performance of DDIO. The default value of this register in our testbed is `0x600`, which has 2 set bits. You can read the current value and write new values to this register via `msr-tools`, as follows:
+- **Tuning**: Our experiments show that changing the values of `IIO LLC WAYS` register, located at `0xC8B`, could improve the performance of DDIO. The default value of this register in our testbed is `0x600`, which has 2 set bits. You can read the current value and write new values to this register via `msr-tools`, as follows:
 
 ```bash
 sudo modprobe msr
@@ -24,7 +24,7 @@ sudo rdmsr 0xc8b
 sudo wrmsr 0xc8b 0x7f0
 ```
 
-- Disabling/Enabling DDIO: DDIO is enabled by default on Intel Xeon processors. DDIO can be disabled globally (i.e.,  by setting the `Disable_All_Allocating_Flows` bit in `iiomiscctrl` register) or per-root PCIe port (i.e., setting bit `NoSnoopOpWrEn` and unsetting bit `Use_Allocating_Flow_Wr` in `perfctrlsts_0` register). You can find more information about these register in the second volume of your processor's datasheet. For instance, you can check [Haswell][haswell-datasheet] and [Cascade Lake][cascade-datasheet] datasheets.
+- **Disabling/Enabling DDIO**: DDIO is enabled by default on Intel Xeon processors. DDIO can be disabled globally (i.e.,  by setting the `Disable_All_Allocating_Flows` bit in `iiomiscctrl` register) or per-root PCIe port (i.e., setting bit `NoSnoopOpWrEn` and unsetting bit `Use_Allocating_Flow_Wr` in `perfctrlsts_0` register). You can find more information about these register in the second volume of your processor's datasheet. For instance, you can check [Haswell][haswell-datasheet] and [Cascade Lake][cascade-datasheet] datasheets.
 
 `change-ddio.c` is a simple C program to change the state of DDIO for a PCIe port. To use `change-ddio`, run the following commands:
 

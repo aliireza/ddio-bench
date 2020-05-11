@@ -128,13 +128,17 @@ To check your installation, run `sudo pqos`. You can find more information about
 
 Below, you can find some useful hints for optimizing your testbed.
 
-- Isolating a CPU Socket: To have a more accurate measurement, we recommend you to isolate one CPU socket. By doing so, you ensure that operating system is not polluting your cache. To do so, you can add the following commands to the `GRUB` commandline in `/etc/default/grub`. To find the cores located on a CPU socket, you can use `lscpu` command.
+### Isolating a CPU Socket
+
+To have a more accurate measurement, we recommend you to isolate one CPU socket. By doing so, you ensure that operating system is not polluting your cache. To do so, you can add the following commands to the `GRUB` commandline in `/etc/default/grub`. To find the cores located on a CPU socket, you can use `lscpu` command.
 
 ```bash
 GRUB_CMDLINE_LINUX="isolcpus=0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17"
 ```
 
-- Other commandlines: There are more options for the `GRUB_CMDLINE` to optimize your system. We used the followings:
+### Other Commandlines
+
+There are more options for the `GRUB_CMDLINE` to optimize your system. We used the followings:
 
 ```bash
 GRUB_CMDLINE_LINUX="isolcpus=0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17 iommu=pt intel_iommu=on default_hugepagesz=1GB hugepagesz=1G hugepages=128 acpi=on selinux=0 audit=0 nosoftlockup processor.max_cstate=1 intel_idle.max_cstate=0 intel_pstate=on nopti nospec_store_bypass_disable nospectre_v2 nospectre_v1 nospec l1tf=off netcfg/do_not_use_netplan=true mitigations=off"
@@ -142,7 +146,9 @@ GRUB_CMDLINE_LINUX="isolcpus=0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17 iommu=p
 
 Note that you need to run `sudo update-grub` and reboot your system after changing `/etc/default/grub`.
 
-- Disabling PAUSE frames: We disable PAUSE frames in our experiments, which will be done automatically by Fastclick. However, you can also enable/disable/check the status of PAUSE frames for every interface via `ethtool`.
+### Disabling PAUSE Frames
+
+We disable PAUSE frames in our experiments, which will be done automatically by Fastclick. However, you can also enable/disable/check the status of PAUSE frames for every interface via `ethtool`.
 
 ```bash
 ethtool -a enp23s0f0
@@ -151,9 +157,9 @@ sudo ethtool -A enp23s0f0 rx off tx off
 
 It is possible to measure the number of PAUSE frames via `ethtool` and `dpdk`.
 
-*ethtool: `sudo ethtool -S enp23s0f0 | grep pause_ctrl`. For more info, check [here][mlx5-counters].
+- **ethtool**: `sudo ethtool -S enp23s0f0 | grep pause_ctrl`. For more info, check [here][mlx5-counters].
 
-*dpdk: You can read ethtool statistics in DPDK via `xstats` API. However, some of the Mellanox counters (e.g., `rx_pause_ctrl` and `tx_pause_ctrl`) are not available by default. To measure PAUSE frames via dpdk, you should add the counters to `static const struct mlx5_counter_ctrl mlx5_counters_init[]` located in `dpdk/drivers/net/mlx5/mlx5_stats.c`, as follows:
+- **dpdk**: You can read ethtool statistics in DPDK via `xstats` API. However, some of the Mellanox counters (e.g., `rx_pause_ctrl` and `tx_pause_ctrl`) are not available by default. To measure PAUSE frames via dpdk, you should add the counters to `static const struct mlx5_counter_ctrl mlx5_counters_init[]` located in `dpdk/drivers/net/mlx5/mlx5_stats.c`, as follows:
 
 ```c
 static const struct mlx5_counter_ctrl mlx5_counters_init[] = {
@@ -175,7 +181,9 @@ static const struct mlx5_counter_ctrl mlx5_counters_init[] = {
 };
 ```
 
-- Configuring Mellanox Cards: We set `CQE_COMPRESSION` to aggressive mode in order to save PCIe bandwidth in our experiments. To check the status of `CQE_COMPRESSION`, you can run the following commands.
+### Configuring Mellanox Cards
+
+We set `CQE_COMPRESSION` to aggressive mode in order to save PCIe bandwidth in our experiments. To check the status of `CQE_COMPRESSION`, you can run the following commands.
 
 ```bash
 sudo mst start
