@@ -185,3 +185,23 @@ sudo mlxconfig -d /dev/mst/mt4119_pciconf0 q | grep CQE
 To change its status, you can run `sudo mlxconfig -d /dev/mst/mt4119_pciconf0 set CQE_COMPRESSION=1`.
 
 Note that you need to install Mellanox `OFED` and `MFT` before being able to run the mentioned commands. For more info, check the Mellanox manual for your NIC.
+
+[ddio-atc-paper]: https://people.kth.se/~farshin/documents/ddio-atc20.pdf
+[atc20-page]: https://www.usenix.org/conference/atc20
+[npf-repo]: https://github.com/tbarbette/npf
+[npf-readme]: https://github.com/tbarbette/npf#network-performance-framework
+[dpdk-page]:https://www.dpdk.org/
+[testpmd-doc]: https://doc.dpdk.org/guides/testpmd_app_ug/intro.html
+[fastclick-repo]: https://github.com/tbarbette/fastclick
+[ddiotune-element]: https://github.com/tbarbette/fastclick/wiki/DDIOTune
+[ddiotune-cc]: https://github.com/tbarbette/fastclick/blob/master/elements/research/ddiotune.cc
+[pcm-page]: https://software.intel.com/content/www/us/en/develop/articles/intel-performance-counter-monitor.html
+[rdt-page]: https://www.intel.com/content/www/us/en/architecture-and-technology/resource-director-technology.html
+[pqos-wiki]: https://github.com/intel/intel-cmt-cat/wiki
+[pcie-events]: https://software.intel.com/en-us/forums/software-tuning-performance-optimization-platform-monitoring/topic/543883
+[mlx5-counters]: https://community.mellanox.com/s/article/understanding-mlx5-ethtool-counters
+[haswell-datasheet]: https://www.intel.com/content/dam/www/public/us/en/documents/datasheets/xeon-e5-v2-datasheet-vol-2.pdf
+[cascade-datasheet]: https://www.intel.com/content/www/us/en/products/docs/processors/xeon/2nd-gen-xeon-scalable-datasheet-vol-2.html
+[dynamic-dma-branch]: https://github.com/tbarbette/fastclick/tree/DMAdynamic
+[alireza-page]: https://www.kth.se/profile/farshin
+[amir-page]: https://www.kth.se/profile/amirrsk
