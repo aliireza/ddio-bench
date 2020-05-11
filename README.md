@@ -19,6 +19,7 @@ You can use [DDIOTune][ddiotune-element] element in fastclick to enable/disable/
 - **Tuning**: Our experiments show that changing the values of `IIO LLC WAYS` register, located at `0xC8B`, could improve the performance of DDIO. The default value of this register in our testbed is `0x600`, which has 2 set bits. You can read the current value and write new values to this register via `msr-tools`, as follows:
 
 ```bash
+sudo apt-get install msr-tools
 sudo modprobe msr
 sudo rdmsr 0xc8b
 sudo wrmsr 0xc8b 0x7f0
