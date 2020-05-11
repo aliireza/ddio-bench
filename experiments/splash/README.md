@@ -1,4 +1,4 @@
-# Splash Experiments
+# Splash Experiment
 
 This experiment reproduces the results presented in Section 4.1 and 4.2 of [our paper][ddio-atc-paper]. The goal is to measure the contention between an I/O application (i.e., L2 forwarding) and a cache-hungry application (i.e., water-nsquared) in the LLC.
 

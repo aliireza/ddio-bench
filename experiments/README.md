@@ -25,4 +25,6 @@ Check the `README` inside each folder for more details.
 
 You can measure different metrics and design your custom experiments by changeing the `testie` files inside each folder. To measure new variables (e.g., `new-var`), you have to print them as `RESULTS-new-var`.
 
+**Note that the available results for each experiment are a bit different from the results provided in our paper, due to the change in our processor's frequency. The DUT's processor is running at 3 GHz rather than 2.3 GHz.**
+
 [ddio-atc-paper]: https://people.kth.se/~farshin/documents/ddio-atc20.pdf
