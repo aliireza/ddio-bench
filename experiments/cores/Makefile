@@ -10,4 +10,5 @@ force-run:
 	${NPF_PATH}/npf-run.py local --testie ./ddio-cores.testie --cluster ${NPF_CLUSTER} --config graph_type=boxplot graph_y_group={result:all} --output --output-columns x all --max-results --graph-filename ddio-cores-results.pdf --graph-size 10 5 --variable ${TOOLS_PATH} ${NPF_FLAGS}
 
 clean:
-	rm -fr *.pdf ddio-cores-results/ testie*/ results/
+	rm -fr *.pdf ddio-cores-results/ testie*/ 
+	rm -fr results/
