@@ -18,8 +18,8 @@ All of the experiments require two servers interconnected via a 100-Gbps link. O
 
 |      Server      |       Processor      |           NIC           |
 |:----------------:|:--------------------:|:-----------------------:|
-| Packet Generator | Intel Xeon Gold 6134 | Mellanox ConnectX-5 VPI |
-| DUT              | Intel Xeon Gold 6140 | Mellanox ConnectX-5 VPI |
+| Packet Generator | Intel Xeon Gold 6134 @ 3.2 GHz | Mellanox ConnectX-5 VPI |
+| DUT              | Intel Xeon Gold 6140 @ 2.3 GHz | Mellanox ConnectX-5 VPI |
 
 Our experiments requires `npf`, `dpdk` (on both servers), `fastclick` (on both servers), `pcm` (on the dut), `intel-cmt-cat` (on the dut), and `Splash-3` (on the dut). You should setup your testbed based on the following guidelines.
 

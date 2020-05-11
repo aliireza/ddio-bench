@@ -51,6 +51,11 @@ var_format+={PCIeRdCur-HIT-RATE:%.02f,PCIeRdCur-MISS-RATE:%.02f,ItoM-HIT-RATE:%.
 var_unit+={PCIeRdCur-MISS-SUM: ,PCIeRdCur-HIT-SUM: ,PCIeRdCur-HIT-RATE: ,PCIeRdCur-MISS-RATE: ,ItoM-MISS-SUM: ,ItoM-HIT-SUM: ,ItoM-HIT-RATE: ,ItoM-MISS-RATE: }
 var_divider+={PCIeRdCur-MISS-SUM:1 ,PCIeRdCur-HIT-SUM:1 ,PCIeRdCur-HIT-RATE:1,PCIeRdCur-MISS-RATE:1, ItoM-MISS-SUM:1 ,ItoM-HIT-SUM:1, ItoM-HIT-RATE:1,ItoM-MISS-RATE:1}
 
+
+var_names+={IOWAY:Number of DDIO Ways}
+
+graph_legend=false
+
 //============================================================================================//
 // Variables Definition
 //============================================================================================//

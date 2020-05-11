@@ -44,6 +44,8 @@ var_names+={LLCMISSES-sum-C2:Sum of Cache Misses of I/O application}
 var_unit+={LLCMISSES-sum-C0: ,LLCMISSES-sum-C2: }
 var_divider+={LLCMISSES-sum-C0:1, LLCMISSES-sum-C2:1}
 
+var_names+={NWAY:Ways Allocated by CAT}
+
 
 //============================================================================================//
 // Variables Definition

@@ -13,11 +13,13 @@ This folder contains the following experiments:
 
 - `cores`: Measures the impact of using different number of cores on the performance of DDIO.
 
-- `cores-vs-ddio-ways`: Compares the performance of DDIO while tuning DDIO ways and using different number of cores.
+- `cores-vs-ways`: Compares the performance of DDIO while tuning DDIO ways and using different number of cores.
 
 - `others`: Contains information for reproducing other experiments done in our paper.
 
 **Before running any experiment, you should define variables in `includes/Makefile.includes` according to your testbed.**
+
+We assume that you are using one NIC to recieve and transmit packets (i.e., `RCV_NIC=0` and `SND_NIC=0`). You can change this in the testie files.
 
 Check the `README` inside each folder for more details.
 
