@@ -4,7 +4,7 @@ This file contains some information about the other experiments performed in [ou
 
 ## Generating IP Filter Rules
 
-We generated IP filter rules with two different methods. To do so, you can use [GenerateIPFlowDispatcher][gen-ip-flows] element from [metron][metron-repo].
+We generated IP filter rules with two different methods. To do so, you can use [GenerateIPFlowDispatcher][gen-ip-flows] element from [metron][metron-repo]. After generating the rules, you can install them on the NIC via `FromDPDKDevice` element. You should set the `MODE` to `flow_disp`, see [here][fromdpdkdevice-wiki].
 
 You can also use `gen-flow-dispatcher-rules.click` written by [Georgios Katsikas][georgios-github].
 
@@ -23,5 +23,6 @@ We used [Seastar][seastar-page] guidelines to benchmark their [Memcached][seasta
 
 [ddio-atc-paper]: https://people.kth.se/~farshin/documents/ddio-atc20.pdf
 [metron-repo]: https://github.com/tbarbette/fastclick/tree/metron
+[fromdpdkdevice-wiki]: https://github.com/tbarbette/fastclick/wiki/FromDPDKDevice
 [gen-ip-flows]: https://github.com/tbarbette/fastclick/blob/metron/elements/ip/generateipflowdispatcher.hh
 [georgios-github]: https://github.com/gkatsikas
