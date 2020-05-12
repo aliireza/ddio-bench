@@ -51,7 +51,7 @@ var_format+={PCIeRdCur-HIT-RATE:%.02f,PCIeRdCur-MISS-RATE:%.02f,ItoM-HIT-RATE:%.
 var_unit+={PCIeRdCur-MISS-SUM: ,PCIeRdCur-HIT-SUM: ,PCIeRdCur-HIT-RATE: ,PCIeRdCur-MISS-RATE: ,ItoM-MISS-SUM: ,ItoM-HIT-SUM: ,ItoM-HIT-RATE: ,ItoM-MISS-RATE: }
 var_divider+={PCIeRdCur-MISS-SUM:1 ,PCIeRdCur-HIT-SUM:1 ,PCIeRdCur-HIT-RATE:1,PCIeRdCur-MISS-RATE:1, ItoM-MISS-SUM:1 ,ItoM-HIT-SUM:1, ItoM-HIT-RATE:1,ItoM-MISS-RATE:1}
 
-graph_cross_reference={THROUGHPUT:PCIeRdCur-HIT-RATE, THROUGHPUT:PCIeRdCur-MISS-RATE, THROUGHPUT:ItoM-HIT-RATE, THROUGHPUT:ItoM-MISS-RATE}
+graph_cross_reference={PCIeRdCur-HIT-RATE:THROUGHPUT, PCIeRdCur-MISS-RATE:THROUGHPUT, ItoM-HIT-RATE:THROUGHPUT, ItoM-MISS-RATE:THROUGHPUT}
 
 //============================================================================================//
 // Variables Definition
@@ -89,7 +89,7 @@ GEN_THREADS=4 //Change not supported as of now
 rate:RATE=1000
 RCV_NIC=0
 SND_NIC=0
-REPLAY_TIMING={0,200,400,800,1000,1200,1400,1600,1800,1900,2000,2100} // changing rate
+REPLAY_TIMING={200,400,800,1000,1200,1400,1600,1800,1900,2000,2100} // changing rate: add 0 for maximum rate
 
 // DDIO variables
 IOWAY=2

@@ -10,7 +10,9 @@ Unfortunately, it is not possible to generate+transfer packets at very low and v
 
 The output of the experiment should be similar to the following figure:
 
-![sample](ddio-pkt-rate-sample.png "Packet Rate Results")
+![sample](ddio-pkt-rate-sample-1.png "Packet Rate Results - PCIe Read Hit Rate")
+
+![sample](ddio-pkt-rate-sample-2.png "Packet Rate Results - PCIe Write Hit Rate")
 
 [ddio-atc-paper]: https://people.kth.se/~farshin/documents/ddio-atc20.pdf
 [replay-unqueue-page]: https://github.com/tbarbette/fastclick/blob/5e06e1884c0d35bdb634858e6b1704ed8bf6faa0/elements/analysis/replay.cc
