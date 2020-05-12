@@ -1,0 +1,85 @@
+%info
+Generating slow pcap files
+Copyright (c) 2020, Alireza Farshin, KTH Royal Institute of Technology - All Rights Reserved
+
+%config
+n_runs=1
+timeout=60
+
+accept_zero={}
+
+//============================================================================================//
+// Variables Definition
+//============================================================================================//
+
+
+%variables
+
+// PATH
+
+// These will be overwritten by the Makefile. Otherwise, you should uncomment/change them.
+
+//DUT_FASTCLICK_PATH=/home/alireza/ddio-bench/fastclick
+//PKT_GEN_FASTCLICK_PATH=/home/alireza/ddio-bench/fastclick
+//PCAP_PATH=/home/alireza/ddio-bench/experiments/pcap-files
+
+// Packet generator variables
+GEN_BURST=128
+GEN_FLOWS=4096
+GEN_PKT_SIZE=1500
+GEN_BLOCKING=true
+GEN_REPLAY=100
+GEN_INIT_WAIT=5
+GEN_TOT=524288
+GEN_THREADS=4 //Change not supported as of now
+GEN_RATE=100000
+-rate:LIMIT=1000000
+rate:RATE=100000
+RCV_NIC=0
+SND_NIC=0
+
+
+%late_variables
+
+// Packet generator variables
+rate:LIMIT=EXPAND( $(( $RATE * 10 if $RATE < 100000 else 1000000 )) )
+NBBUF=EXPAND( $(( (($LIMIT + ($GEN_BURST * 2) ) * $GEN_THREADS ) + 8192 )) )
+
+
+//============================================================================================//
+// Client: pcap-generator
+//============================================================================================//
+
+%script@client sudo=true autokill=false
+
+
+cp PGM $PKT_GEN_FASTCLICK_PATH
+cd $PKT_GEN_FASTCLICK_PATH
+echo "EVENT PCAPGEN_STARTED"
+bin/click --dpdk -l 0-15 -n 6 -w ${self:$SND_NIC:pci} -v -- PGM
+echo "EVENT PCAPGEN_FINISHED"
+
+//============================================================================================//
+
+%file@client PGM
+
+//============================================================================================//
+// PGM: Pcap Generator Module
+//============================================================================================//
+
+d :: DPDKInfo($NBBUF)
+
+define($filename $PCAP_PATH/$(($GEN_PKT_SIZE)).pcap)
+    
+
+src :: FastUDPFlows(
+    RATE $GEN_RATE, LIMIT $GEN_TOT, LENGTH $GEN_PKT_SIZE, 
+    SRCETH ${client:$SND_NIC:mac}, DSTETH ${server:$SND_NIC:mac}, 
+    SRCIP ${client:$SND_NIC:ip}, DSTIP ${server:$SND_NIC:ip},
+    FLOWS $GEN_FLOWS, FLOWSIZE $GEN_BURST,
+    ACTIVE true
+    );
+
+pcap :: ToDump(FILENAME $filename)
+
+src -> pcap;
