@@ -1,0 +1,396 @@
+%info
+Changing processing time for L2 forwarding application
+Copyright (c) 2020, Alireza Farshin, KTH Royal Institute of Technology - All Rights Reserved
+
+%config
+n_runs=10
+timeout=-1
+
+accept_zero={}
+
+
+//============================================================================================//
+// Variable Config
+//============================================================================================//
+
+
+var_names={THROUGHPUT:Throughput (Gbps)}
+var_format={THROUGHPUT:%.02f}
+var_unit={THROUGHPUT: }
+var_divider={THROUGHPUT:1000000000}
+
+var_names+={TXRATE:Generator Rate (Gbps)}
+var_format+={TXRATE:%.02f}
+var_unit+={TXRATE: }
+var_divider+={TXRATE:1000000000}
+
+var_names+={PPS:Received Packets per Second (Million)}
+var_format+={PPS:%.02f}
+var_unit+={PPS: }
+var_divider+={PPS:1000000}
+
+var_names+={TESTTIME:Test Time (s)}
+var_format+={TESTTIME:%.02f}
+var_unit+={TESTTIME: }
+var_divider+={TESTTIME:1}
+
+var_names+={LATAVG:Average latency (us), LAT50:50th% percentile latency (us), LAT99:99th% percentile latency (us)}
+var_unit+={LATAVG: ,LAT50: ,LAT99: }
+var_divider+={LATAVG:1, LAT50:1, LAT90:1}
+
+
+var_names+={PCIeRdCur-MISS-SUM:Sum of PCIe Read Misses}
+var_names+={PCIeRdCur-HIT-SUM:Sum of PCIe Read Hits}
+var_names+={PCIeRdCur-HIT-RATE:PCIe Read Hit Rate (%)}
+var_names+={PCIeRdCur-MISS-RATE:PCIe Read MISS Rate (%)}
+var_names+={ItoM-MISS-SUM:Sum of PCIe Write Misses}
+var_names+={ItoM-HIT-SUM:Sum of PCIe Write Hits}
+var_names+={ItoM-HIT-RATE:PCIe Write Hit Rate (%)}
+var_names+={ItoM-MISS-RATE:PCIe Write Miss Rate (%)}
+var_format+={PCIeRdCur-HIT-RATE:%.02f,PCIeRdCur-MISS-RATE:%.02f,ItoM-HIT-RATE:%.02f,ItoM-MISS-RATE:%.02f}
+var_unit+={PCIeRdCur-MISS-SUM: ,PCIeRdCur-HIT-SUM: ,PCIeRdCur-HIT-RATE: ,PCIeRdCur-MISS-RATE: ,ItoM-MISS-SUM: ,ItoM-HIT-SUM: ,ItoM-HIT-RATE: ,ItoM-MISS-RATE: }
+var_divider+={PCIeRdCur-MISS-SUM:1 ,PCIeRdCur-HIT-SUM:1 ,PCIeRdCur-HIT-RATE:1,PCIeRdCur-MISS-RATE:1, ItoM-MISS-SUM:1 ,ItoM-HIT-SUM:1, ItoM-HIT-RATE:1,ItoM-MISS-RATE:1}
+
+var_names+={n_w:Number of Calls}
+
+//============================================================================================//
+// Variables Definition
+//============================================================================================//
+
+
+%variables
+
+// PATH
+
+// These will be overwritten by the Makefile. Otherwise, you should uncomment/change them.
+
+//DUT_FASTCLICK_PATH=/home/alireza/ddio-bench/fastclick
+//PKT_GEN_FASTCLICK_PATH=/home/alireza/ddio-bench/fastclick
+
+
+// L2 Forwarding variables
+NINBURST=32
+NOUTBURST=32
+NDESC=4096
+NCORE=2
+threadoffset=0 // run L2 on core 0
+n_w={0,20,40,60,80,100,120,140,160,180,200,220,240,260,280,300,320,340,360,380,400} // number of random calls in WorkPackage
+
+// Packet generator variables
+GEN_BURST=128
+GEN_FLOWS=4096
+GEN_PKT_SIZE=1500
+GEN_BLOCKING=true
+GEN_REPLAY=100
+GEN_INIT_WAIT=5
+GEN_TOT=524288
+GEN_THREADS=4 //Change not supported as of now
+-rate:LIMIT=1000000
+rate:RATE=1000
+RCV_NIC=0
+SND_NIC=0
+REPLAY_TIMING=0 //0 is maximum rate
+
+// DDIO variables
+IOWAY=2
+
+// PCM variables
+CPU_SOCKET=0
+
+%late_variables
+
+// Packet generator variables
+rate:LIMIT=EXPAND( $(( $RATE * 10 if $RATE < 100000 else 1000000 )) )
+NBBUF=EXPAND( $(( (($LIMIT + ($GEN_BURST * 2) ) * $GEN_THREADS ) + 8192 )) )
+advertise?=1
+
+
+NG=[0-3]
+LAUNCH_CODE=EXPAND( write gen0/rcv$NG/avg.reset, write gen0/gen$NG/sndavg.reset, write gen0/gen$NG/replay.stop $replay_count, write gen0/gen$NG/replay.active true, )
+LAUNCH_CODE=HEAD($GEN_THREADS, $LAUNCH_CODE)
+
+ALL_AVG=EXPAND( $(gen0/rcv$NG/tsd.average) )
+ALL_AVG=HEAD($GEN_THREADS, $ALL_AVG)
+
+ALL_50=EXPAND( $(gen0/rcv$NG/tsd.median) )
+ALL_50=HEAD($GEN_THREADS, $ALL_50)
+
+ALL_99=EXPAND( $(gen0/rcv$NG/tsd.perc99) )
+ALL_99=HEAD($GEN_THREADS, $ALL_99)
+
+ALL_SND=EXPAND( $(gen0/gen$NG/sndavg.link_rate) )
+ALL_SND=HEAD($GEN_THREADS, $ALL_SND)
+
+ALL_RATE=EXPAND( $(gen0/rcv$NG/avg.rate) )
+ALL_RATE=HEAD($GEN_THREADS, $ALL_RATE)
+
+ALL_LINK=EXPAND( $(gen0/rcv$NG/avg.link_rate) )
+ALL_LINK=HEAD($GEN_THREADS, $ALL_LINK)
+
+
+//============================================================================================//
+// Server: DUT
+//============================================================================================//
+
+
+%script@server sudo=true
+cp RXM $DUT_FASTCLICK_PATH
+
+// Enabling MSR
+modprobe msr 
+
+// Reset CAT configuration
+echo "Resetting CAT"
+pqos -R
+
+// Run I/O application on core 0
+cd $DUT_FASTCLICK_PATH
+echo "Launching I/O application"
+bin/click --dpdk -l 0-35 -n 6 -w ${self:$RCV_NIC:pci} -v -- RXM
+
+
+%script@server sudo=true name=profiler autokill=false waitfor=DUT_STARTED delay=0
+cp pcm.sh $DUT_FASTCLICK_PATH
+cp pcm-processing.sh $DUT_FASTCLICK_PATH
+
+// Run PCM PCIe 
+cd $DUT_FASTCLICK_PATH
+bash pcm.sh
+
+%script@server sudo=true name=pcm-parser autokill=true waitfor=PKTGEN_FINISHED delay=0
+
+// Killing PCM PCIe to create the csv file
+killall pcm-pcie
+
+// Processing PCM output
+cd $DUT_FASTCLICK_PATH
+echo "Launching PCM script"
+bash pcm-processing.sh test.log
+
+
+%file@server pcm.sh
+
+#============================================================================================#
+# pcm.sh : Script to launch pcm-pcie
+#============================================================================================#
+
+echo "Launching PCM"
+pcm-pcie -e 1 -csv=test.log
+
+
+#============================================================================================#
+
+
+%file@server pcm-processing.sh
+
+#====================================================s========================================#
+# pcm-processing.sh : Script to process PCM output to get PCIe metrics hit rate
+#============================================================================================#
+
+input_file=$1
+
+#PCIeRdCur - PCIe Read
+cat $input_file | grep "(Miss)" | awk -F, '{if($1==$CPU_SOCKET) print $2}' > miss.txt
+cat $input_file | grep "(Hit)" | awk -F, '{if($1==$CPU_SOCKET) print $2}' > hit.txt
+
+hit_sum=`cat hit.txt | awk 'BEGIN{sum=0;}{sum+=$1}END{print sum}'`
+miss_sum=`cat miss.txt | awk 'BEGIN{sum=0;}{sum+=$1}END{print sum}'`
+hit_rate=`echo \$(($hit_sum *100)) / \$(($hit_sum + $miss_sum ))| bc -l`
+miss_rate=`echo \$(($miss_sum *100)) / \$(($hit_sum + $miss_sum ))| bc -l`
+
+echo "RESULT-PCIeRdCur-HIT-SUM "$hit_sum
+echo "RESULT-PCIeRdCur-MISS-SUM "$miss_sum
+echo "RESULT-PCIeRdCur-HIT-RATE "$hit_rate
+echo "RESULT-PCIeRdCur-MISS-RATE "$miss_rate
+
+rm -f miss.txt hit.txt
+
+#ItoM - PCIe Write
+
+cat $input_file | grep "(Hit)" | awk -F, '{if($1==$CPU_SOCKET) print $6}' > hit.txt
+cat $input_file | grep "(Miss)" | awk -F, '{if($1==$CPU_SOCKET) print $6}' > miss.txt
+
+hit_sum=`cat hit.txt | awk 'BEGIN{sum=0;}{sum+=$1}END{print sum}'`
+miss_sum=`cat miss.txt | awk 'BEGIN{sum=0;}{sum+=$1}END{print sum}'`
+hit_rate=`echo \$(($hit_sum *100)) / \$(($hit_sum + $miss_sum ))| bc -l`
+miss_rate=`echo \$(($miss_sum *100)) / \$(($hit_sum + $miss_sum ))| bc -l`
+
+echo "RESULT-ItoM-HIT-SUM "$hit_sum
+echo "RESULT-ItoM-MISS-SUM "$miss_sum
+echo "RESULT-ItoM-HIT-RATE "$hit_rate
+echo "RESULT-ItoM-MISS-RATE "$miss_rate
+
+rm -f miss.txt hit.txt
+
+rm -f $input_file
+
+#============================================================================================#
+
+
+%script@client sudo=true autokill=false
+
+//============================================================================================//
+// Client: pkt-gen
+//============================================================================================//
+
+
+cp TXM $PKT_GEN_FASTCLICK_PATH
+cd $PKT_GEN_FASTCLICK_PATH
+echo "EVENT PKTGEN_STARTED"
+bin/click --dpdk -l 0-15 -n 6 -w ${self:$SND_NIC:pci} -v -- GEN_LENGTH=$GEN_PKT_SIZE TXM
+echo "EVENT PKTGEN_FINISHED"
+
+//============================================================================================//
+
+
+%file@server RXM
+
+//============================================================================================//
+// Receiver (RX) Module: L2 Forwarding
+//============================================================================================//
+
+define(
+	$ndesc $(( int ($NDESC /$NCORE) )),
+	$queueLen 1024,
+	$queueNum $NCORE,
+	$maxThreads $NCORE,
+)
+
+fd0 :: FromDPDKDevice(0, N_QUEUES $queueNum, MAXTHREADS $maxThreads, PAUSE none, BURST $NINBURST, NDESC $ndesc, THREADOFFSET $threadoffset, NUMA false);
+td0 :: ToDPDKDevice(0, IQUEUE $queueLen, BLOCKING true, BURST $NOUTBURST);
+
+DDIOTune(N_WAYS $IOWAY, DEV ${self:$RCV_NIC:pci})
+
+fd0
+    -> EtherMirror
+    -> WorkPackage(S 0, N 0, R 0, PAYLOAD 0, W $n_w)
+    -> td0
+
+DriverManager(
+	print "EVENT DUT_STARTED",
+        wait,
+        print "",
+        print "Rxcount "$(fd0.count),
+        print "Rxdrops "$(fd0.hw_dropped),
+        print "",
+
+        // Print additional stats from the NIC
+        //print "RESULT-RX-OUT-OF-BUFFER $(fd0.xstats rx_out_of_buffer)",
+        //print "RESULT-RX-PAUSE "$(fd0.xstats rx_pause_ctrl_phy),
+        //print "RESULT-TX-PAUSE "$(fd0.xstats tx_pause_ctrl_phy),
+        stop
+);
+
+//============================================================================================//
+
+
+%file@client TXM
+
+//============================================================================================//
+// Transmitter (TX) Module: Packet Generator
+//============================================================================================//
+// Inspited by NPF sample testie file written by Tom Barbette
+// https://github.com/tbarbette/npf/blob/master/modules/fastclick-udpgen-latency-single.testie
+
+d :: DPDKInfo($NBBUF)
+
+define($replay_count $GEN_REPLAY)
+
+elementclass Numberise { $magic |
+    input-> Strip(14) -> check :: CheckIPHeader -> StoreData(36,$magic) ->  nPacket :: NumberPacket(40) -> SetIPChecksum -> Unstrip(14) -> output
+}
+
+elementclass Generator { $NUM, $srcmac, $dstmac, $srcip, $dstip, $th |
+    fastudp :: FastUDPFlows(RATE 0, LIMIT $GEN_TOT, LENGTH $GEN_LENGTH, SRCETH $srcmac, DSTETH $dstmac, SRCIP $srcip, DSTIP $dstip, FLOWS $GEN_FLOWS, FLOWSIZE $GEN_BURST)
+    -> MarkMACHeader
+    -> EnsureDPDKBuffer
+    -> Numberise(\<123400>$NUM)
+    -> replay :: ReplayUnqueue(STOP 0, TIMING $REPLAY_TIMING, QUICK_CLONE true)
+    -> rt :: RecordTimestamp(N $LIMIT, OFFSET 54)
+    -> sndavg :: AverageCounter() //Single thread here
+    -> output;
+
+    Idle -> puller::Null -> Discard;
+    StaticThreadSched(replay $th,puller $th);
+}
+
+elementclass Receiver { $rt |
+    input
+    -> tsd :: TimestampDiff($rt, N $(( $GEN_TOT * $GEN_REPLAY)) ) //MT path !!
+    -> Unstrip(14)
+    -> avg :: AverageCounterMP
+    -> Discard;
+
+    unt :: Print("WARNING: Untimestamped packet", -1)
+    -> Discard;
+    tsd[1] -> unt;
+}
+
+elementclass MultiThreadGenerator { $port, $outPort, $srcmac, $dstmac, $outSrcmac, $srcip, $dstip |
+    tdOUT::ToDPDKDevice($port, BLOCKING $GEN_BLOCKING);
+
+    gen0 :: Generator(\<01>, $srcmac, $dstmac, $srcip, $dstip, 0) -> tdOUT;
+    gen1 :: Generator(\<02>, $srcmac, $dstmac, $srcip, $dstip, 1) -> tdOUT;
+    gen2 :: Generator(\<03>, $srcmac, $dstmac, $srcip, $dstip, 2) -> tdOUT;
+    gen3 :: Generator(\<04>, $srcmac, $dstmac, $srcip, $dstip, 3) -> tdOUT;
+
+    fd :: FromDPDKDevice($outPort, MAC $outSrcmac, PROMISC false, VERBOSE 99, PAUSE none)
+    -> c0 :: Classifier(12/0806 20/0001,
+                        12/0806 20/0002,
+                        12/0800,
+                        -)[2]
+    -> Strip(14)
+    -> magic :: Classifier( 36/12340001,
+                            36/12340002,
+                            36/12340003,
+                            36/12340004,
+                            -)
+
+    magic[0] -> rcv0 :: Receiver(gen0/rt);
+    magic[1] -> rcv1 :: Receiver(gen1/rt);
+    magic[2] -> rcv2 :: Receiver(gen2/rt);
+    magic[3] -> rcv3 :: Receiver(gen3/rt);
+
+    magic[4]
+    -> Print("WARNING: Unknown magic / untimestamped packet", -1)
+    -> Discard;
+
+    c0[3]
+    -> Print("WARNING: Non-IP packet !")
+    -> Discard;
+
+    c0[0] -> ARPResponder($srcip $srcmac)
+          -> tdOUT;
+    c0[1] -> Discard;
+
+    input -> tdOUT;
+}
+
+gen0 :: MultiThreadGenerator(${client:$RCV_NIC:pci}, ${client:$RCV_NIC:pci}, ${client:$RCV_NIC:mac}, ${server:$RCV_NIC:mac}, ${client:$RCV_NIC:mac}, ${client:$RCV_NIC:ip}, ${server:$RCV_NIC:ip})
+
+//Advertise return MAC address
+adv :: FastUDPFlows(RATE 0, LIMIT -1, LENGTH 60, SRCETH ${client:$SND_NIC:mac}, DSTETH ${server:$SND_NIC:mac}, SRCIP ${client:$SND_NIC:ip}, DSTIP ${server:$SND_NIC:ip}, FLOWS 1, FLOWSIZE 1, ACTIVE $advertise)
+ -> RatedUnqueue(1)
+ -> gen0;
+// -> ToDPDKDevice(1);
+
+DriverManager(
+    pause,
+    pause,
+    pause,
+    pause,
+    wait ${GEN_INIT_WAIT}s,
+    read d.pool_count,
+    print "EVENT GEN_BEGIN\n\r",
+    print "Launching replay",
+    $LAUNCH_CODE
+    set starttime $(now),
+    pause,
+    read d.pool_count,
+    print "RESULT-TESTTIME $(sub $(now) $starttime)",
+    print "RESULT-LATAVG $(div $(add $ALL_AVG 0) $GEN_THREADS)",
+	print "RESULT-LAT50 $(div $(add $ALL_50 0) $GEN_THREADS)",
+	print "RESULT-LAT99 $(div $(add $ALL_99 0) $GEN_THREADS)",
+    print "RESULT-TXRATE $(add $ALL_SND )",
+    print "RESULT-PPS $(add $ALL_RATE )",
+    print "RESULT-THROUGHPUT $(add $ALL_LINK )")
