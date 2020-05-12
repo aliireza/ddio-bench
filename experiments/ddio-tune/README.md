@@ -8,6 +8,6 @@ The output of the experiment should be similar to the following figure:
 
 ![sample](ddiotune-sample.png "DDIOTune Results")
 
-2 and 11 are representing the minimum and maximum values for `IIO LLC WAYS` that are `0x600` and `0x7FF` in our testbed.
+2 and 11 are representing the minimum and maximum values for `IIO LLC WAYS` that are `0x600` and `0x7FF` in our testbed, respectively.
 
 [ddio-atc-paper]: https://people.kth.se/~farshin/documents/ddio-atc20.pdf
