@@ -1,4 +1,4 @@
-# Other Experiment
+# Other Experiments
 
 This file contains some information about the other experiments performed in [our paper][ddio-atc-paper].
 
