@@ -68,8 +68,6 @@ NINBURST=32
 NOUTBURST=32
 NDESC=4096
 NCORE=1
-PKTSIZE=1024
-TIMING=0 //for replay: 0 is maximum rate
 threadoffset=2 // run L2 on core 2
 
 // Packet generator variables
@@ -85,7 +83,7 @@ GEN_THREADS=4 //Change not supported as of now
 rate:RATE=1000
 RCV_NIC=0
 SND_NIC=0
-REPLAY_TIMING=0
+REPLAY_TIMING=0 //0 is maximum rate
 
 // CAT variables
 NWAY={0x600,0x300,0x180,0x0c0,0x060,0x030,0x018,0x00c,0x006,0x003} //Sweep 2W
