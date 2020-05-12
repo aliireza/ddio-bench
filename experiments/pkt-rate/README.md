@@ -6,6 +6,8 @@ Unfortunately, it is not possible to generate+transfer packets at very low and v
 
 `make generate` create a pcap file for 1500-B packets. Afterwards, you can use `make run` to run the experiments. NPF automatically generates the output as CSVs and PDFs.
 
+**Note that you should tune `REPLAY_TIMING` variable if you are generating/using a different pcap file.**
+
 The output of the experiment should be similar to the following figure:
 
 ![sample](ddio-pkt-rate-sample.png "Packet Rate Results")
