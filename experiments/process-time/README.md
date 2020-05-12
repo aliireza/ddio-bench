@@ -4,11 +4,13 @@ This experiment reproduces the results presented in Section 5.2 of [our paper][d
 
 `make run` runs these experiments. NPF automatically generates the output as CSVs and PDFs.
 
-The output of the experiment should be similar to the following figure:
+The output of the experiment should be similar to the following figures:
 
 ![sample](ddio-process-time-sample-1.png "Processing Time Results - PCIe Write Hit Rate")
 
-**Note that this figure is a streched version of the figure used in paper, as the processor is running at a higher frequency.**
+![sample](ddio-process-time-sample-2.png "Processing Time Results - Throughput")
+
+**Note that these figures are a streched version of the figures used in our paper, as DUT's processor is running at a higher frequency.**
 
 [ddio-atc-paper]: https://people.kth.se/~farshin/documents/ddio-atc20.pdf
 [workpackage-wiki]: https://github.com/tbarbette/fastclick/wiki/WorkPackage
