@@ -75,14 +75,12 @@ NINBURST=32
 NOUTBURST=32
 NDESC={128,256,512,1024,2048,4096}
 NCORE=1
-PKTSIZE={256,512,1024,1500}
-TIMING=0 //for replay: 0 is maximum rate
 threadoffset=0 // run L2 on core 0
 
 // Packet generator variables
 GEN_BURST=128
 GEN_FLOWS=4096
-GEN_PKT_SIZE=1024
+GEN_PKT_SIZE={256,512,1024,1500}
 GEN_BLOCKING=true
 GEN_REPLAY=100
 GEN_INIT_WAIT=5
@@ -92,7 +90,7 @@ GEN_THREADS=4 //Change not supported as of now
 rate:RATE=1000
 RCV_NIC=0
 SND_NIC=0
-REPLAY_TIMING=0
+REPLAY_TIMING=0 //0 is maximum rate
 
 // DDIO variables
 IOWAY=2
