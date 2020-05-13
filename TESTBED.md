@@ -15,7 +15,7 @@ We use [NPF][npf-repo] tool to run our experiments. However, it is possible to r
 
 ```bash
 git clone https://github.com/tbarbette/npf.git && cd npf
-sudo apt install python3 python3-pip
+sudo apt install python3 python3-pip libssl-dev
 pip3 install --user -r requirements.txt
 ```
 
