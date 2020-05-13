@@ -4,7 +4,7 @@ This file contains some information about the other experiments performed in [ou
 
 ## Generating IP Filter Rules
 
-We generated IP filter rules with two different methods. To do so, you can use [GenerateIPFlowDispatcher][gen-ip-flows] element from [metron][metron-repo]. After generating the rules, you can install them on the NIC via `FromDPDKDevice` element. You should set the `MODE` to `flow_disp`, see [here][fromdpdkdevice-wiki].
+We generated IP filter rules with two different methods. To do so, you can use [GenerateIPFlowDispatcher][gen-ip-flows] element from [metron][metron-repo]. After generating the rules, you can install them on the NIC via Fastclick's `FromDPDKDevice` element. You should set the `MODE` to `flow_disp`, see [here][fromdpdkdevice-wiki].
 
 You can also use `gen-flow-dispatcher-rules.click` written by [Georgios Katsikas][georgios-github].
 

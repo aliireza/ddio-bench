@@ -84,7 +84,7 @@ You can try running [testpmd][testpmd-doc] to check whether DPDK is working prop
 
 ## Fastclick
 
-We use [Fastclick][fastclick-repo] to generate and process packets. To build Fastclick, you can run the following commands. We have implemented a new element for Fastclick, called [DDIOTune][ddiotune-element], to enable/disable/tune DDIO. To use this element, you have to compile fastclick with `--enable-research` flag and install `libpci`.
+We use [Fastclick][fastclick-repo] to generate and process packets. To build Fastclick, you can run the following commands. We have implemented a new element for Fastclick, called [DDIOTune][ddiotune-element], to enable/disable/tune DDIO. To use this element, you have to compile Fastclick with `--enable-research` flag and install `libpci`.
 
 ```bash
 git clone git@github.com:tbarbette/fastclick.git

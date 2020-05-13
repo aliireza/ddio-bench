@@ -14,7 +14,7 @@ For more information, please check [README](experiments/README.md).
 
 ## Tuning DDIO
 
-You can use [DDIOTune][ddiotune-element] element in fastclick to enable/disable/tune DDIO. If you want to tune DDIO in a different context you can use the following guidelines.
+You can use [DDIOTune][ddiotune-element] element in Fastclick to enable/disable/tune DDIO. If you want to tune DDIO in a different context you can use the following guidelines.
 
 - **Tuning**: Our experiments show that changing the values of `IIO LLC WAYS` register, located at `0xC8B`, could improve the performance of DDIO. The default value of this register in our testbed is `0x600`, which has 2 set bits. You can read the current value and write new values to this register via `msr-tools`, as follows:
 
@@ -35,13 +35,13 @@ gcc change-ddio.c -o change-ddio -lpci
 sudo ./change-ddio
 ```
 
-You can also check the implementation of [DDIOTune][ddiotune-cc] element in fastclick.
+You can also check the implementation of [DDIOTune][ddiotune-cc] element in Fastclick.
 
 ## Dynamic Burst Size Reduction
 
-We have investigated the impact of dynamically reducing the number of RX descriptors in case of congestion in the TX path. Our implementation can be found at [DMAdynamic][dynamic-dma-branch] branch of fastclick.
+We have investigated the impact of dynamically reducing the number of RX descriptors in case of congestion in the TX path. Our implementation can be found at [DMAdynamic][dynamic-dma-branch] branch of Fastclick.
 
-If you want to try it, you have to compile fastclick with `--enable_dynamic_rxburst` flag.
+If you want to try it, you have to compile Fastclick with `--enable_dynamic_rxburst` flag.
 
 ## Citing our paper
 
