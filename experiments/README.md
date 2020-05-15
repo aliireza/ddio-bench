@@ -25,9 +25,11 @@ Check the `README` inside each folder for more details.
 
 - `make run` runs the experiment in the quit mode.
 - `make force-run` ignores the current results and runs the experiment. It also prints the output of every script. If you want to re-run an experiment, but not ignoring the current results, you can modify the `Makefile`. To do so, you can change `--force-retest` to `--no-test` in the `NPF_FLAGS`.
+- NPF automatically generates the output as CSVs and PDFs. However, you can use your favourite plotting tool to replot the results. You can add `--pandas [PATH]` flag to `NPF_FLAGS` to get a Pandas dataframe for an experiment, see [here][npf-output].
 
 You can measure different metrics and design your custom experiments by changeing the `testie` files inside each folder. To measure new variables (e.g., `new-var`), you have to print them as `RESULTS-new-var`.
 
 **Note that the available results for each experiment are a bit different from the results provided in our paper, due to the change in our processor's frequency. The DUT's processor is running at 3 GHz rather than 2.3 GHz. However, they are still conveying the same message, as described in [our paper][ddio-atc-paper].**
 
 [ddio-atc-paper]: https://people.kth.se/~farshin/documents/ddio-atc20.pdf
+[npf-output]: https://github.com/tbarbette/npf#output
