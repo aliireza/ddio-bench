@@ -23,7 +23,7 @@ We assume that you are using one NIC to recieve and transmit packets (i.e., `RCV
 
 Check the `README` inside each folder for more details.
 
-- `make run` runs the experiment in the quit mode.
+- `make run` runs the experiment in the quiet mode.
 - `make force-run` ignores the current results and runs the experiment. It also prints the output of every script. If you want to re-run an experiment, but not ignoring the current results, you can modify the `Makefile`. To do so, you can change `--force-retest` to `--no-test` in the `NPF_FLAGS`.
 - NPF automatically generates the output as CSVs and PDFs. However, you can use your favourite plotting tool to replot the results. You can add `--pandas [PATH]` flag to `NPF_FLAGS` to get a Pandas dataframe for an experiment, see [here][npf-output].
 

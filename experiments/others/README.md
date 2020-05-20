@@ -10,9 +10,10 @@ You can also use `gen-flow-dispatcher-rules.click` written by [Georgios Katsikas
 
 ## Benchmarking NVMe
 
-We used `fio` for benchmarking NVMe. For more information, you can check [here][nvme-benchmark]
+We used `fio` for benchmarking NVMe. For more information, you can check [here][nvme-benchmark]. Additionally, we used [Google cloud guidelines][google-ssd] to create a logical volume from multiple SSD partitions.
 
 [nvme-benchmark]: https://wiki.mikejung.biz/Benchmarking
+[google-ssd]: https://cloud.google.com/compute/docs/disks/local-ssd
 
 ## Benchmarking Memcached
 

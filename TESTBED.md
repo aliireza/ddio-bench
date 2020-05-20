@@ -7,7 +7,7 @@ All of the experiments require two servers interconnected via a 100-Gbps link. O
 | Packet Generator | Intel Xeon Gold 6134 @ 3.2 GHz | Mellanox ConnectX-5 VPI |
 | DUT              | Intel Xeon Gold 6140 @ 2.3 GHz | Mellanox ConnectX-5 VPI |
 
-Our experiments requires `npf`, `dpdk` (on both servers), `fastclick` (on both servers), `pcm` (on the dut), `intel-cmt-cat` (on the dut), and `Splash-3` (on the dut). You should setup your testbed based on the following guidelines.
+Our experiments require `npf`, `dpdk` (on both servers), `fastclick` (on both servers), `pcm` (on the dut), `intel-cmt-cat` (on the dut), and `Splash-3` (on the dut). You should setup your testbed based on the following guidelines.
 
 ## Network Performance Framework (NPF) Tool
 
@@ -44,10 +44,10 @@ nfs=0
 
 You should define 4 variables for every NIC port:
 
-- `mac`: the MAC address of the interface
-- `ip`: the IP address of the interface
-- `ifname`: the interface name
-- `pci`: the PCIe address of the interface
+- `mac`: The MAC address of the interface
+- `ip`: The IP address of the interface
+- `ifname`: The interface name
+- `pci`: The PCIe address of the interface
 
 The first three variables can be set via `ifconfig`. To find the PCIe address of an interface, you can run `sudo lspci -v | grep Mellanox`. It is important to set these values carefuly, as NPF replaces these values in its scripts.
 
@@ -62,7 +62,7 @@ You can check [NPF README][npf-readme] file for more information.
 
 ## Data Plane Development Kit (DPDK)
 
-We use [DPDK][dpdk-page] to bypass kernel network stack in order achieve line rate in our tests. To build DPDK, you can run the following commands. Note that Mellanox drivers (e.g., MLX5) is not enabled by default and you should enable them in `dpdk/config/common_base` if you have Mellanox cards.
+We use [DPDK][dpdk-page] to bypass kernel network stack in order to achieve line rate in our tests. To build DPDK, you can run the following commands. Note that Mellanox drivers (e.g., `MLX5`) is not enabled by default and you should enable them in `dpdk/config/common_base` if you have Mellanox cards.
 
 ```bash
 git clone https://github.com/DPDK/dpdk.git

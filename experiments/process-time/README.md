@@ -1,6 +1,6 @@
 # Processing Time Experiment
 
-This experiment reproduces the results presented in Section 5.2 of [our paper][ddio-atc-paper]. The goal is to measure the performance of DDIO (i.e., PCIe read/write hit rate) while processing packets. We use fastclick's `WorkPackage` element to vary the amount of computation per packet by calling the `std::mt1993` random number generator multiple times, see [here][workpackage-wiki].
+This experiment reproduces the results presented in Section 5.2 of [our paper][ddio-atc-paper]. The goal is to measure the performance of DDIO (i.e., PCIe read/write hit rate) while processing packets. We use Fastclick's `WorkPackage` element to vary the amount of computation per packet by calling the `std::mt1993` random number generator multiple times, see [here][workpackage-wiki].
 
 `make run` runs these experiments. NPF automatically generates the output as CSVs and PDFs.
 
