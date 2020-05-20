@@ -4,7 +4,7 @@ This experiment reproduces the results presented in Section 5.2 of [our paper][d
 
 Unfortunately, it is not possible to generate+transfer packets at very low and very high rates within one pipeline. Therefore, we generate low-rate `pcap` files for different packet sizes and then replay them at different rates.
 
-`make generate` create a pcap file for 1500-B packets. Afterwards, you can use `make run` to run the experiments. NPF automatically generates the output as CSVs and PDFs.
+`make generate` create a pcap file for 1500-B packets. Afterward, you can use `make run` to run the experiments. NPF automatically generates the output as CSVs and PDFs.
 
 **Note that you should tune `REPLAY_TIMING` variable if you are generating/using a different pcap file.**
 
