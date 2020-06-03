@@ -146,6 +146,31 @@ GRUB_CMDLINE_LINUX="isolcpus=0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17 iommu=p
 
 Note that you need to run `sudo update-grub` and reboot your system after changing `/etc/default/grub`.
 
+### Changing Frequency
+
+It is essential to check the processor's frequency before running any experiment so that you could reproduce them later.
+
+- **Checking**: To check the processor's frequency you can use one of the following methods:
+    1. `lscpu | grep "CPU" | grep "MHz"`
+    2. `cat /proc/cpuinfo | grep "processor\|MHz"`
+    3. `sudo lshw -c cpu | grep "*-cpu\|MHz"`
+    4. `sudo dmidecode -t processor | grep Speed`
+    5. `sudo watch -n 1  cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_cur_freq`
+
+    The last method prints the frequency of each core every second. Note that instead of using `cpu*`, you can print the frequency of a subset of cores (e.g., `cpu[0-7]`).
+
+- **Changing**: To change the frequency of the processors, you can use `cpupower` tool, as follows:
+
+    ```bash
+    sudo cpupower frequency-set -u 2.3G -d 2.3G
+    ```
+
+  - `-u` specifies the maximum frequency, while `-d` shows the minimum frequency for each core. To have a fixed frequency, you can set both of them to a single frequency (e.g., `2.3G`).
+  - `sudo cpupower frequency-info | grep "hardware limits"` or `lscpu | grep "CPU" | grep "MHz"` print the minimum/maximum frequencies for the processor.
+  - You can get the nominal frequency of the processor via: `cat /proc/cpuinfo | grep model | grep -o "[0-9.]\+G" | head -n 1`
+
+For more information, check [here][cpu-freq-link].
+
 ### Disabling PAUSE Frames
 
 We disable PAUSE frames in our experiments, which will be done automatically by Fastclick. However, you can also enable/disable/check the status of PAUSE frames for every interface via `ethtool`.
@@ -207,6 +232,7 @@ Note that you need to install Mellanox `OFED` and `MFT` before being able to run
 [rdt-page]: https://www.intel.com/content/www/us/en/architecture-and-technology/resource-director-technology.html
 [pqos-wiki]: https://github.com/intel/intel-cmt-cat/wiki
 [pcie-events]: https://software.intel.com/en-us/forums/software-tuning-performance-optimization-platform-monitoring/topic/543883
+[cpu-freq-link]: https://wiki.archlinux.org/index.php/CPU_frequency_scaling
 [mlx5-counters]: https://community.mellanox.com/s/article/understanding-mlx5-ethtool-counters
 [haswell-datasheet]: https://www.intel.com/content/dam/www/public/us/en/documents/datasheets/xeon-e5-v2-datasheet-vol-2.pdf
 [cascade-datasheet]: https://www.intel.com/content/www/us/en/products/docs/processors/xeon/2nd-gen-xeon-scalable-datasheet-vol-2.html
