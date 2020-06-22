@@ -15,6 +15,8 @@ This folder contains the following experiments:
 
 - `cores-vs-ways`: Compares the performance of DDIO while tuning DDIO ways and using different number of cores.
 
+- `freq`: Compares the performance of DDIO while changing the uncore frequency.
+
 - `others`: Contains information for reproducing other experiments done in our paper.
 
 **Before running any experiment, you should define variables in `includes/Makefile.includes` according to your testbed.**

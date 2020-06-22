@@ -1,0 +1,48 @@
+Uncore Frequency Scaling:
+
+Read page 290 of Energy-Efficient Servers book [3] for more information. 
+
+* Check the current frequency: 
+
+sudo rdmsr 0x621
+
+The value is hexadecimal. After converting it to decimal, you should multiply it by 100 MHz. 
+
+Source: https://software.intel.com/en-us/forums/software-tuning-performance-optimization-platform-monitoring/topic/710279
+see page 220 of [3]
+
+
+* Change the frequency:
+
+sudo wrmsr 0x620 0x1818
+
+The frequency conversion is similar to the checking part. The value is a 16-bit hexadecimal number. Bit 15-8 shows the minimum frequency while bit 7-0 shows the maximum frequency. 
+
+** Remember the default value before changing it. Otherwise, you have to reset the system. 
+
+* Note that the default value of MSR 0x620 shows the range. On skylake machines, the default value is 0xc18, i.e., the minimum frequency is (0xc=12 * 100 MHz = 1.2 GHz) and the maximum frequency is (0x18=24 x 100 MHz = 2.4 GHz). This is similar to the values reported in [1].
+
+* We can set the change the frequency by setting both min/max to the same value and read the 0x621 register. According to [3], setting the value to 0x3f3f will maximize the uncore frequency scaling. 
+
+
+This register is called 'MSR_RING_RATIO_LIMIT' on page 4843 & 4847 for kaby lake , coffee lake, and cannon lake; and "MSR UNCORE_RATIO_LIMIT" on page 4785, 4800, 4807, & 4862 for Xeon E5 v3, Broadwell, Xeon E5 v4, and Xeon Scalable family. Source: Intel® 64 and IA-32 Architectures Software Developer's Manual - May 2020 (https://software.intel.com/content/www/us/en/develop/articles/intel-sdm.html)
+
+We are intrested in "UNCORE_RATIO_LIMIT" 
+
+
+Relevant links: 
+
+- https://software.intel.com/en-us/forums/intel-moderncode-for-parallel-architectures/topic/760980
+- https://software.intel.com/en-us/forums/software-tuning-performance-optimization-platform-monitoring/topic/701320
+- https://software.intel.com/en-us/forums/software-tuning-performance-optimization-platform-monitoring/topic/543513
+- https://software.intel.com/en-us/forums/software-tuning-performance-optimization-platform-monitoring/topic/710279
+
+
+Relevant papers:
+- [1] Energy Efficiency Features of the Intel Skylake-SP Processor and Their Impact on Performance (https://arxiv.org/abs/1905.12468)
+- [2] COMPARISONS OF CORE AND UNCORE FREQUENCY SCALING MODES IN QUANTUM CHEMISTRY APPLICATION GAMES (https://dl.acm.org/doi/10.5555/3213069.3213082)
+- [3] Energy Efficient Servers - Blueprints for Data Center Optimization (https://link.springer.com/book/10.1007/978-1-4302-6638-9)
+
+Irrelavant, but useful sources:
+- A Metric-Guided Method for Discovering Impactful Features and Architectural Insights for Skylake-Based Processors (https://dl.acm.org/doi/10.1145/3369383)
+
