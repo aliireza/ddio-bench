@@ -8,4 +8,4 @@ The output of the experiment should be similar to the following figure:
 
 ![sample](ddio-cores-vs-ways-sample.png "Cores vs. Ways Results")
 
-[ddio-atc-paper]: https://people.kth.se/~farshin/documents/ddio-atc20.pdf
+[ddio-atc-paper]: https://www.usenix.org/conference/atc20/presentation/farshin

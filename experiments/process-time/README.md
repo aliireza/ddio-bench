@@ -12,5 +12,5 @@ The output of the experiment should be similar to the following figures:
 
 **Note that these figures are a stretched version of the figures used in our paper, as DUT's processor is running at a higher frequency.**
 
-[ddio-atc-paper]: https://people.kth.se/~farshin/documents/ddio-atc20.pdf
+[ddio-atc-paper]: https://www.usenix.org/conference/atc20/presentation/farshin
 [workpackage-wiki]: https://github.com/tbarbette/fastclick/wiki/WorkPackage

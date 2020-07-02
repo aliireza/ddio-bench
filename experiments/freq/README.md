@@ -30,5 +30,5 @@ sudo rdmsr 0x621
 
 For more information, please check [here][intel-book].
 
-[ddio-atc-paper]: https://people.kth.se/~farshin/documents/ddio-atc20.pdf
+[ddio-atc-paper]: https://www.usenix.org/conference/atc20/presentation/farshin
 [intel-book]: https://link.springer.com/book/10.1007/978-1-4302-6638-9

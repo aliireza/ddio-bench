@@ -219,7 +219,7 @@ To change its status, you can run `sudo mlxconfig -d /dev/mst/mt4119_pciconf0 se
 
 Note that you need to install Mellanox `OFED` and `MFT` before being able to run the mentioned commands. For more info, check the Mellanox manual for your NIC.
 
-[ddio-atc-paper]: https://people.kth.se/~farshin/documents/ddio-atc20.pdf
+[ddio-atc-paper]: https://www.usenix.org/conference/atc20/presentation/farshin
 [atc20-page]: https://www.usenix.org/conference/atc20
 [npf-repo]: https://github.com/tbarbette/npf
 [npf-readme]: https://github.com/tbarbette/npf#network-performance-framework

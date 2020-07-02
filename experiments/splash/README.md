@@ -17,4 +17,4 @@ You can check the cache misses of the cache-hungry application in the same scena
 
 The results of our testbed are located at `sample-results/`.
 
-[ddio-atc-paper]: https://people.kth.se/~farshin/documents/ddio-atc20.pdf
+[ddio-atc-paper]: https://www.usenix.org/conference/atc20/presentation/farshin

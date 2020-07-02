@@ -10,4 +10,4 @@ The output of the experiment should be similar to the following figure:
 
 2 and 11 are representing the minimum and maximum values for `IIO LLC WAYS` that are `0x600` and `0x7FF` in our testbed, respectively.
 
-[ddio-atc-paper]: https://people.kth.se/~farshin/documents/ddio-atc20.pdf
+[ddio-atc-paper]: https://www.usenix.org/conference/atc20/presentation/farshin

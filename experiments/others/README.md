@@ -22,7 +22,7 @@ We used [Seastar][seastar-page] guidelines to benchmark their [Memcached][seasta
 [seastar-page]: http://seastar.io/
 [seastar-memcached]: https://github.com/scylladb/seastar/wiki/Memcached-Benchmark
 
-[ddio-atc-paper]: https://people.kth.se/~farshin/documents/ddio-atc20.pdf
+[ddio-atc-paper]: https://www.usenix.org/conference/atc20/presentation/farshin
 [metron-repo]: https://github.com/tbarbette/fastclick/tree/metron
 [fromdpdkdevice-wiki]: https://github.com/tbarbette/fastclick/wiki/FromDPDKDevice
 [gen-ip-flows]: https://github.com/tbarbette/fastclick/blob/metron/elements/ip/generateipflowdispatcher.hh

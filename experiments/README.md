@@ -33,5 +33,5 @@ You can measure different metrics and design your custom experiments by changing
 
 **Note that the available results for each experiment are a bit different from the results provided in our paper, due to the change in our processor's frequency. The DUT's processor is running at 3 GHz rather than 2.3 GHz. However, they are still conveying the same message, as described in [our paper][ddio-atc-paper]. To change/check the processors' frequency, see [here](../TESTBED.md)**
 
-[ddio-atc-paper]: https://people.kth.se/~farshin/documents/ddio-atc20.pdf
+[ddio-atc-paper]: https://www.usenix.org/conference/atc20/presentation/farshin
 [npf-output]: https://github.com/tbarbette/npf#output

@@ -66,7 +66,7 @@ month = jul,
 
 If you have any questions regarding our code or the paper, you can contact [Alireza Farshin][alireza-page] (farshin at kth.se) and/or [Amir Roozbeh][amir-page] (amirrsk at kth.se).
 
-[ddio-atc-paper]: https://people.kth.se/~farshin/documents/ddio-atc20.pdf
+[ddio-atc-paper]: https://www.usenix.org/conference/atc20/presentation/farshin
 [atc20-page]: https://www.usenix.org/conference/atc20
 [npf-repo]: https://github.com/tbarbette/npf
 [npf-readme]: https://github.com/tbarbette/npf#network-performance-framework
