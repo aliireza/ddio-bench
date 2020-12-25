@@ -35,6 +35,10 @@ gcc change-ddio.c -o change-ddio -lpci
 sudo ./change-ddio
 ```
 
+You need to define the proper value for **nic_bus** and **ddio_state** in the code. For example, if you have a NIC that is mounted on `03:00.0`, you should change **nic_bus** to `0x03`. **ddio_state=0** will disable the DDIO for the PCIe root responsible for that specific NIC.
+
+You can find the PCIe BDF (Bus Device Function) of your NIC via `lspci`, e.g., try `lspci -vvv | grep Mellanox` if you have a Mellanox card. 
+
 You can also check the implementation of [DDIOTune][ddiotune-cc] element in Fastclick.
 
 ## Dynamic Burst Size Reduction
