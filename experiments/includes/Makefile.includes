@@ -1,20 +1,23 @@
-#Path to NPF
-NPF_PATH=/home/alireza/ddio-bench/npf/
+# Get root from place of current Makefile.includes
+ROOT_DIR := $(realpath $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))/../..)
 
-# Tools path 
+# Path to NPF
+NPF_PATH=${ROOT_DIR}/npf
+
+# Tools path
 TOOLS_PATH :=
 
 # Pcap files path
 
-TOOLS_PATH += PCAP_PATH=/home/alireza/ddio-bench/experiments/pcap-files
+TOOLS_PATH += PCAP_PATH=${ROOT_DIR}/experiments/pcap-files
 
 #Path to fastclick on 
 
-TOOLS_PATH += DUT_FASTCLICK_PATH=/home/alireza/ddio-bench/fastclick
-TOOLS_PATH += PKT_GEN_FASTCLICK_PATH=/home/alireza/ddio-bench/fastclick
+TOOLS_PATH += DUT_FASTCLICK_PATH=${ROOT_DIR}/fastclick
+TOOLS_PATH += PKT_GEN_FASTCLICK_PATH=${ROOT_DIR}/fastclick
 
 # Path to Splash-3 Benchmark Suite
-TOOLS_PATH += DUT_SPLASH_PATH=/home/alireza/ddio-bench/Splash-3/codes/apps/water-nsquared
+TOOLS_PATH += DUT_SPLASH_PATH=${ROOT_DIR}/Splash-3/codes/apps/water-nsquared
 
 # NPF Clusters (dut.node and pkt-gen.node should be defined in ${NPF_PATH}/cluster)
 NPF_CLUSTER=server=dut client=pkt-gen
